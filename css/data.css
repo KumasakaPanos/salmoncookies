@@ -1,3 +1,20 @@
-
-h2
-{font-family: 'Monda', sans-serif;}
+body{
+    background-color: beige;
+    color:brown;
+}
+h2{
+font-family: 'Monda', sans-serif;
+}
+#sales{
+font-family: 'Monda', sans-serif;
+}
+ul{
+    font-size:10px;
+}
+td
+{
+    border-style:solid;
+}
+#fishpicture{
+margin:auto;
+}
