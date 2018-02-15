@@ -9,6 +9,7 @@ var maxCustomersPerHour=[65,90,60,75,60];
 var avgCookiesPerCustomer=[6.3,12.2,5.1,15.5,3.9];
 var prices=[.5,1,.5,.75,.5];
 var stands=[];
+var initializationDone=false;
 //Establishment of the lower table in the DOM.
 var profitTable=document.getElementById('sales');
 //This is the creation of the objects for the website's forms.
@@ -81,14 +82,12 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
 }
 //This renders the table.
-function toDOMTable()
+function makeHeaderRow()
 {
-//This makes the objects
-//This renders the objects.
   var trEl=document.createElement('tr');
+  trEl.id='Header';
   var thEl=document.createElement('th');
   thEl.textContent='Locations';
-  console.log(thEl);
   trEl.appendChild(thEl);
   for(i=0;i<hours.length;i++)
   {
@@ -100,45 +99,63 @@ function toDOMTable()
   thEl.textContent='Totals';
   trEl.appendChild(thEl);
   profitTable.appendChild(trEl);
-  for(i=0;i<stands.length;i++)
-  {trEl=document.createElement('tr');
-    var tdEl=document.createElement('td');
-    tdEl.textContent=stands[i].locationName;
-    trEl.appendChild(tdEl);
-    for(var h=0;h<hours.length;h++)
-    {
-      tdEl=document.createElement('td');
-      tdEl.textContent=stands[i].cookiesSoldEachHour[h];
-      trEl.appendChild(tdEl);
-    }
-    tdEl=document.createElement('td');
-    tdEl.textContent=stands[i].totalCookiesSoldPerDay;
-    trEl.appendChild(tdEl);
-    profitTable.appendChild(trEl);}
-  trEl=document.createElement('tr');
-  tdEl=document.createElement('td');
-  tdEl.textContent='Daily Totals';
-  trEl.appendChild(tdEl);
-  for(i=0;i<hours.length;i++){
-    var total=0;
-    for(h=0;h<locations.length;h++)
-    {total+=stands[h].cookiesSoldEachHour[i];
-    }
-    tdEl=document.createElement('td');
-    tdEl.textContent=total;
-    trEl.appendChild(tdEl);
+}
+function makeFooterRow()
+{if (initializationDone===true)
+{
+  var oldFoot=document.getElementById('foot');
+  oldFoot.parentNode.removeChild(oldFoot);
+}
+var trEl=document.createElement('tr');
+trEl.id='foot';
+var tdEl=document.createElement('td');
+tdEl.textContent='Daily Totals';
+trEl.appendChild(tdEl);
+for(i=0;i<hours.length;i++){
+  var total=0;
+  for(var h=0;h<locations.length;h++)
+  {total+=stands[h].cookiesSoldEachHour[i];
   }
   tdEl=document.createElement('td');
-  total=0;
-  for(h=0;h<locations.length;h++)
-  {
-    total+=stands[h].totalCookiesSoldPerDay;
-  }
   tdEl.textContent=total;
   trEl.appendChild(tdEl);
-  profitTable.appendChild(trEl);
-  console.log(total);
 }
+tdEl=document.createElement('td');
+total=0;
+for(h=0;h<locations.length;h++)
+{
+  total+=stands[h].totalCookiesSoldPerDay;
+}
+tdEl.textContent=total;
+trEl.appendChild(tdEl);
+profitTable.appendChild(trEl);
+}
+function startingTable()
+{
+  makeHeaderRow();
+  for(i=0;i<stands.length;i++)
+  {stands[i].makeRow();
+  }
+  makeFooterRow();
+  initializationDone=true;
+}
+Stand.prototype.makeRow=function()
+{ var trEl=document.createElement('tr');
+  trEl.id=i;
+  var tdEl=document.createElement('td');
+  tdEl.textContent=this.locationName;
+  trEl.appendChild(tdEl);
+  for(var h=0;h<hours.length;h++)
+  {
+    tdEl=document.createElement('td');
+    tdEl.textContent=this.cookiesSoldEachHour[h];
+    trEl.appendChild(tdEl);
+  }
+  tdEl=document.createElement('td');
+  tdEl.textContent=this.totalCookiesSoldPerDay;
+  trEl.appendChild(tdEl);
+  profitTable.appendChild(trEl);
+};
 submitButtonPress.addEventListener('click',function()
 {
   if(newMinCust.value===''||newMaxCust.value===''||newLocation.value===''||newAvgCook.value===''){
@@ -159,12 +176,12 @@ function addStore()
   newAvgCook.value='';
   newMaxCust.value='';
   newMinCust.value='';
-  profitTable.innerHTML='';
   i=minCustomersPerHour.length-1;
   stands.push(new Stand(i));
   stands[i].calcCustomersEachHour();
   stands[i].calcCookiesEachHour();
   stands[i].calcTotalCookiesPerDay();
-  toDOMTable();
+  stands[i].makeRow();
+  makeFooterRow();
 }
-toDOMTable();
+startingTable();
