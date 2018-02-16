@@ -32,7 +32,7 @@ function Stand(i){
   this.price=prices[i];
   this.profitByHour=[];
   this.accessTable=accessTable[i];
-  this.calcCustomersEachHour=function(){
+  this.calcCustomersEachHour=function(){ 
     for (var h=0;h<hours.length;h++){
       this.customersEachHour.push(getRandomInt(this.minCustomersPerHour,this.maxCustomersPerHour));
     }
