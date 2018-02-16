@@ -111,7 +111,7 @@ function makeFooterRow(){
   }
   tdEl=document.createElement('td');
   total=0;
-  for(h=0;h<locations.length;h++)  {
+  for(h=0;h<locations.length;h++){
     total+=stands[h].totalCookiesSoldPerDay;
   }
   tdEl.textContent=total;
