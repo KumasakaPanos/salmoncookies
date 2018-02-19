@@ -10,6 +10,7 @@ var avgCookiesPerCustomer=[6.3,12.2,5.1,15.5,3.9];
 var prices=[.5,1,.5,.75,.5];
 var stands=[];
 var initializationDone=false;
+var staffTable=document.getElementById('staff');
 //Establishment of the lower table in the DOM.
 var profitTable=document.getElementById('sales');
 //This is the creation of the objects for the website's forms.
@@ -77,17 +78,11 @@ function getRandomInt(min, max){
 function makeHeaderRow(){
   var trEl=document.createElement('tr');
   trEl.id='Header';
-  var thEl=document.createElement('th');
-  thEl.textContent='Locations';
-  trEl.appendChild(thEl);
+  newElement('th','Locations:',trEl);
   for(i=0;i<hours.length;i++){
-    thEl=document.createElement('th');
-    thEl.textContent=hours[i];
-    trEl.appendChild(thEl);
+    newElement('th',hours[i],trEl);
   }
-  thEl=document.createElement('th');
-  thEl.textContent='Totals';
-  trEl.appendChild(thEl);
+  newElement('th','totals',trEl);
   profitTable.appendChild(trEl);
 }
 function makeFooterRow(){
@@ -105,23 +100,20 @@ function makeFooterRow(){
     for(var h=0;h<locations.length;h++)
     {total+=stands[h].cookiesSoldEachHour[i];
     }
-    tdEl=document.createElement('td');
-    tdEl.textContent=total;
-    trEl.appendChild(tdEl);
+    newElement('td',total,trEl);
   }
-  tdEl=document.createElement('td');
   total=0;
   for(h=0;h<locations.length;h++){
     total+=stands[h].totalCookiesSoldPerDay;
   }
-  tdEl.textContent=total;
-  trEl.appendChild(tdEl);
+  newElement('td',total,trEl);
   profitTable.appendChild(trEl);
 }
 function startingTable(){
   makeHeaderRow();
   for(i=0;i<stands.length;i++)
   {stands[i].makeRow();
+    stands[i].makeStaffRow();
   }
   makeFooterRow();
   initializationDone=true;
@@ -129,19 +121,31 @@ function startingTable(){
 Stand.prototype.makeRow=function(){
   var trEl=document.createElement('tr');
   trEl.id=i;
+  newElement('td',this.locationName,trEl);
+  for(var h=0;h<hours.length;h++){
+    newElement('td',this.cookiesSoldEachHour[h],trEl);
+  }
+  newElement('td',this.totalCookiesSoldPerDay,trEl);
+  profitTable.appendChild(trEl);
+};
+Stand.prototype.makeStaffRow=function(){
+  var trEl=document.createElement('tr');
+  trEl.id='staff'+i;
   var tdEl=document.createElement('td');
   tdEl.textContent=this.locationName;
   trEl.appendChild(tdEl);
   for(var h=0;h<hours.length;h++){
-    tdEl=document.createElement('td');
-    tdEl.textContent=this.cookiesSoldEachHour[h];
-    trEl.appendChild(tdEl);
+    newElement('td',Math.ceil(this.cookiesSoldEachHour[h]/15),trEl);
   }
-  tdEl=document.createElement('td');
-  tdEl.textContent=this.totalCookiesSoldPerDay;
-  trEl.appendChild(tdEl);
-  profitTable.appendChild(trEl);
+  staffTable.appendChild(trEl);
 };
+
+function newElement(elementType,content,parent){
+  var newEl=document.createElement(elementType);
+  newEl.textContent=content;
+  parent.appendChild(newEl);
+}
+
 function addStore(){
   if(newMinCust.value===''||newMaxCust.value===''||newLocation.value===''||newAvgCook.value===''){
     alert('Please input a value into each field.');
@@ -162,6 +166,7 @@ function addStore(){
     stands[i].calcCookiesEachHour();
     stands[i].calcTotalCookiesPerDay();
     stands[i].makeRow();
+    stands[i].makeStaffRow();
     makeFooterRow();
   }
 }
